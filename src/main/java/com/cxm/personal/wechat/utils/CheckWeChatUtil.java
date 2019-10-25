@@ -1,7 +1,6 @@
 package com.cxm.personal.wechat.utils;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**

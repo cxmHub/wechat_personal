@@ -15,7 +15,7 @@ import java.util.*;
 
 /**
  * @author cxm
- * @description xml和文本之间转化
+ * @description
  * @date 2019-10-22 15:08
  **/
 public class MessageUtil {
