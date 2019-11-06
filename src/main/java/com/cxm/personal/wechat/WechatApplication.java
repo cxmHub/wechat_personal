@@ -18,6 +18,6 @@ public class WechatApplication extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return  builder.sources(WechatApplication.class);
+        return builder.sources(WechatApplication.class);
     }
 }
