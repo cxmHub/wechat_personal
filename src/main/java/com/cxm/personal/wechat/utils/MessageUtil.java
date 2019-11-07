@@ -94,7 +94,9 @@ public class MessageUtil {
         messageText.setToUserName(fromUserName);
         messageText.setFromUserName(toUserName);
         messageText.setCreateTime(new Date().getTime());
-        messageText.setContent("欢迎关注,直接回复可以聊天哦!");
+        messageText.setContent("欢迎关注！\n"+"1、回复1，每日一句英语学习\n" +
+                "2、回复天气可以查询天气，例如：北京天气\n" +
+                "3、输入其他内容，可以在线与价值一亿的智能聊天机器人聊天");
         messageText.setMsgType(MESSAGE_TEXT);
         return messageToXml(messageText);
     }
@@ -117,8 +119,8 @@ public class MessageUtil {
         content = content.replace("吗", "")
                 .replace("谁", "大帅批")
                 .replace("你", "我")
-                .replace("？", "!")
-                .replace("?", "!");
+                .replace("？", "！")
+                .replace("?", "！");
 
         messageText.setContent(content);
         messageText.setMsgType(MESSAGE_TEXT);
