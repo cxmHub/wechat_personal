@@ -1,8 +1,11 @@
 package com.cxm.personal.wechat.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cxm.personal.wechat.pojo.City;
 import com.cxm.personal.wechat.pojo.Sentence;
 import com.cxm.personal.wechat.pojo.Weather;
+import com.cxm.personal.wechat.rpc.TuLingRPC;
+import com.cxm.personal.wechat.rpc.res.BaseResponse;
 import com.cxm.personal.wechat.service.CityService;
 import com.cxm.personal.wechat.service.SentenceService;
 import com.cxm.personal.wechat.service.WeatherService;
@@ -35,6 +38,8 @@ public class WeChatController {
     private WeatherService weatherService;
     @Resource
     private SentenceService sentenceService;
+    @Resource
+    private TuLingRPC tuLingRPC;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -78,24 +83,28 @@ public class WeChatController {
                 //用户发来其他消息处理
 
                 // 必须表明天气
-                if (content.contains("天气")) {
-                    // 爬城市信息
-                    cityService.insertCity(content);
-                    // 爬天气
-                    weatherService.insertWeather(content);
-                    Weather weather = weatherService.getWeatherByNameAndDate(content);
-                    if (weather != null){
-                        weather.setCityName(content.substring(0, content.indexOf("天气")));
-                        message = MessageUtil.weatherQuery(fromUserName, toUserName, weather);
-                    } else {
-                        message = MessageUtil.errorResult(fromUserName, toUserName, "请输入正确的地址！");
-                    }
-                } else if (content.contains("1")) {
+//                if (content.contains("天气")) {
+//                    // 爬城市信息
+//                    cityService.insertCity(content);
+//                    // 爬天气
+//                    weatherService.insertWeather(content);
+//                    Weather weather = weatherService.getWeatherByNameAndDate(content);
+//                    if (weather != null){
+//                        weather.setCityName(content.substring(0, content.indexOf("天气")));
+//                        message = MessageUtil.weatherQuery(fromUserName, toUserName, weather);
+//                    } else {
+//                        message = MessageUtil.errorResult(fromUserName, toUserName, "请输入正确的地址！");
+//                    }
+//                }
+                 if (content.contains("1")) {
                     Sentence sentenceByDate = sentenceService.getSentenceByDate(dateFormat.format(new Date()));
                     message = MessageUtil.daySentence(fromUserName, toUserName, sentenceByDate);
                 } else {
-                    message = MessageUtil.chatWithMe(fromUserName, toUserName, content);
-                }
+//                    message = MessageUtil.chatWithMe(fromUserName, toUserName, content);
+                     // todo:接入了图灵机器人，一亿聊天下架
+                     BaseResponse baseResponse = tuLingRPC.chatWithRoot(content);
+                     message = MessageUtil.TuLing(fromUserName, toUserName, baseResponse);
+                 }
             }
         }
         try {

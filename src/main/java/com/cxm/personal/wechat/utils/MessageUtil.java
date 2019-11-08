@@ -3,6 +3,9 @@ package com.cxm.personal.wechat.utils;
 import com.cxm.personal.wechat.pojo.MessageText;
 import com.cxm.personal.wechat.pojo.Sentence;
 import com.cxm.personal.wechat.pojo.Weather;
+import com.cxm.personal.wechat.rpc.res.BaseResponse;
+import com.cxm.personal.wechat.rpc.res.Results;
+import com.cxm.personal.wechat.rpc.res.Values;
 import com.thoughtworks.xstream.XStream;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -12,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author cxm
@@ -200,4 +204,21 @@ public class MessageUtil {
                 .append(translation);
         return sb.toString();
     }
+
+
+    public static String TuLing(String fromUserName, String toUserName, BaseResponse baseResponse) {
+        MessageText messageText = new MessageText();
+        messageText.setToUserName(fromUserName);
+        messageText.setFromUserName(toUserName);
+        messageText.setCreateTime(new Date().getTime());
+
+        List<Results> results = baseResponse.getResults();
+        List<Values> collect = results.stream().map(Results::getValues).collect(Collectors.toList());
+//        List<String> texts = collect.stream().map(Values::getText).collect(Collectors.toList());
+        String result = collect.stream().map(Values::getText).collect(Collectors.joining("\n"));
+        messageText.setContent(result);
+        messageText.setMsgType(MESSAGE_TEXT);
+        return messageToXml(messageText);
+    }
+
 }
