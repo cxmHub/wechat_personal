@@ -10,8 +10,10 @@ import com.cxm.personal.wechat.service.SentenceService;
 import com.cxm.personal.wechat.service.WeatherService;
 import com.cxm.personal.wechat.utils.CheckWeChatUtil;
 import com.cxm.personal.wechat.utils.MessageUtil;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -28,7 +30,7 @@ import java.util.Map;
  * @description
  * @date 2019-10-22 10:57
  **/
-@RestController
+@Controller
 public class WeChatController {
 
     @Resource
@@ -46,8 +48,13 @@ public class WeChatController {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String index(){
+        return "index";
+    }
 
     @RequestMapping(value = "/connect", method = RequestMethod.GET)
+    @ResponseBody
     public String connect(HttpServletRequest request, HttpServletResponse response) {
 
         String signature = request.getParameter("signature");
