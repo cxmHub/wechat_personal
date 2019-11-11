@@ -111,7 +111,7 @@ public class WeChatController {
 //                        message = MessageUtil.errorResult(fromUserName, toUserName, "请输入正确的地址！");
 //                    }
 //                }
-                    if (content.contains("1")) {
+                    if ("1".equals(content)) {
                         Sentence sentenceByDate = sentenceService.getSentenceByDate(dateFormat.format(new Date()));
                         message = MessageUtil.daySentence(fromUserName, toUserName, sentenceByDate);
                     } else {
