@@ -4,6 +4,7 @@ import com.cxm.personal.wechat.pojo.MessageText;
 import com.cxm.personal.wechat.pojo.Sentence;
 import com.cxm.personal.wechat.pojo.Weather;
 import com.cxm.personal.wechat.rpc.res.BaseResponse;
+import com.cxm.personal.wechat.rpc.res.QingYunKeResponse;
 import com.cxm.personal.wechat.rpc.res.Results;
 import com.cxm.personal.wechat.rpc.res.Values;
 import com.thoughtworks.xstream.XStream;
@@ -98,7 +99,7 @@ public class MessageUtil {
         messageText.setToUserName(fromUserName);
         messageText.setFromUserName(toUserName);
         messageText.setCreateTime(new Date().getTime());
-        messageText.setContent("欢迎关注！\n"+"1、回复1，每日一句英语学习\n" +
+        messageText.setContent("欢迎关注！\n" + "1、回复1，每日一句英语学习\n" +
                 "2、回复天气可以查询天气，例如：北京天气\n" +
                 "3、输入其他内容，可以在线与价值一亿的智能聊天机器人聊天");
         messageText.setMsgType(MESSAGE_TEXT);
@@ -162,12 +163,13 @@ public class MessageUtil {
 
     /**
      * 错误消息
+     *
      * @param fromUserName
      * @param toUserName
      * @param result
      * @return
      */
-    public static String errorResult(String fromUserName, String toUserName, String result){
+    public static String errorResult(String fromUserName, String toUserName, String result) {
         MessageText messageText = new MessageText();
         messageText.setToUserName(fromUserName);
         messageText.setFromUserName(toUserName);
@@ -221,4 +223,15 @@ public class MessageUtil {
         return messageToXml(messageText);
     }
 
+
+    // 处理QingYunKe内容
+    public static String QingYunKe(String fromUserName, String toUserName, QingYunKeResponse response) {
+        MessageText messageText = new MessageText();
+        messageText.setToUserName(fromUserName);
+        messageText.setFromUserName(toUserName);
+        messageText.setCreateTime(new Date().getTime());
+        messageText.setContent(response.getContent().replace("{br}", "\n"));
+        messageText.setMsgType(MESSAGE_TEXT);
+        return messageToXml(messageText);
+    }
 }

@@ -1,12 +1,11 @@
 package com.cxm.personal.wechat.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.cxm.personal.wechat.pojo.City;
 import com.cxm.personal.wechat.pojo.Sentence;
-import com.cxm.personal.wechat.pojo.Weather;
+import com.cxm.personal.wechat.rpc.QingYunKeRPC;
 import com.cxm.personal.wechat.rpc.TuLingRPC;
-import com.cxm.personal.wechat.rpc.res.BaseResponse;
+import com.cxm.personal.wechat.rpc.res.QingYunKeResponse;
 import com.cxm.personal.wechat.service.CityService;
+import com.cxm.personal.wechat.service.LogService;
 import com.cxm.personal.wechat.service.SentenceService;
 import com.cxm.personal.wechat.service.WeatherService;
 import com.cxm.personal.wechat.utils.CheckWeChatUtil;
@@ -40,6 +39,10 @@ public class WeChatController {
     private SentenceService sentenceService;
     @Resource
     private TuLingRPC tuLingRPC;
+    @Resource
+    private QingYunKeRPC qingYunKeRPC;
+    @Resource
+    private LogService logService;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -60,6 +63,7 @@ public class WeChatController {
 
     @RequestMapping(value = "/connect", method = RequestMethod.POST)
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
+
         response.setCharacterEncoding("utf-8");
         PrintWriter out = null;
         //将微信请求xml转为map格式，获取所需的参数
@@ -71,18 +75,22 @@ public class WeChatController {
         String event = map.get("Event");
         String message = "说点什么吧!";
 
-        // 订阅
-        if (event != null) {
-            if (MessageUtil.MESSAGE_SUBSCRIBE.equals(event)) {
-                message = MessageUtil.subscribeMessage(fromUserName, toUserName);
-            } else if (MessageUtil.MESSAGE_UNSUBSCRIBE.equals(event)) {
-                return;
-            }
-        } else {
-            if (MessageUtil.MESSAGE_TEXT.equals(msgType)) {
-                //用户发来其他消息处理
 
-                // 必须表明天气
+        logService.insertLog(fromUserName, content);
+
+        try {
+            // 订阅
+            if (event != null) {
+                if (MessageUtil.MESSAGE_SUBSCRIBE.equals(event)) {
+                    message = MessageUtil.subscribeMessage(fromUserName, toUserName);
+                } else if (MessageUtil.MESSAGE_UNSUBSCRIBE.equals(event)) {
+                    return;
+                }
+            } else {
+                if (MessageUtil.MESSAGE_TEXT.equals(msgType)) {
+                    //用户发来其他消息处理
+
+                    // 必须表明天气
 //                if (content.contains("天气")) {
 //                    // 爬城市信息
 //                    cityService.insertCity(content);
@@ -96,17 +104,24 @@ public class WeChatController {
 //                        message = MessageUtil.errorResult(fromUserName, toUserName, "请输入正确的地址！");
 //                    }
 //                }
-                 if (content.contains("1")) {
-                    Sentence sentenceByDate = sentenceService.getSentenceByDate(dateFormat.format(new Date()));
-                    message = MessageUtil.daySentence(fromUserName, toUserName, sentenceByDate);
-                } else {
+                    if (content.contains("1")) {
+                        Sentence sentenceByDate = sentenceService.getSentenceByDate(dateFormat.format(new Date()));
+                        message = MessageUtil.daySentence(fromUserName, toUserName, sentenceByDate);
+                    } else {
 //                    message = MessageUtil.chatWithMe(fromUserName, toUserName, content);
-                     // todo:接入了图灵机器人，一亿聊天下架
-                     BaseResponse baseResponse = tuLingRPC.chatWithRoot(content);
-                     message = MessageUtil.TuLing(fromUserName, toUserName, baseResponse);
-                 }
+                        // :接入了图灵机器人，一亿聊天下架
+//                        BaseResponse baseResponse = tuLingRPC.chatWithRoot(content);
+//                        message = MessageUtil.TuLing(fromUserName, toUserName, baseResponse);
+                        // 图灵api下架， 接入青云客api
+                        QingYunKeResponse qingYunKeResponse = qingYunKeRPC.chatWithQingYunKeRoot(content);
+                        message = MessageUtil.QingYunKe(fromUserName, toUserName, qingYunKeResponse);
+                    }
+                }
             }
+        } catch (Exception e) {
+            message = MessageUtil.errorResult(fromUserName, toUserName, "对不起，这个我真帮不了您！");
         }
+
         try {
             out = response.getWriter();
             out.write(message);

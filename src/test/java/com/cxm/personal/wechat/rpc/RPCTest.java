@@ -16,6 +16,8 @@ public class RPCTest extends WechatApplicationTests {
 
     @Resource
     TuLingRPC tuLingRPC;
+    @Resource
+    QingYunKeRPC qingYunKeRPC;
 
 
     @Test
@@ -23,6 +25,12 @@ public class RPCTest extends WechatApplicationTests {
         BaseResponse hello = tuLingRPC.chatWithRoot("每天可以请求几次");
         System.out.println(hello.toString());
 
+    }
+
+
+    @Test
+    public void QingYunKeTest(){
+        System.out.println(qingYunKeRPC.chatWithQingYunKeRoot("天气北京"));
     }
 
 }

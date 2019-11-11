@@ -10,17 +10,13 @@ import com.cxm.personal.wechat.rpc.res.BaseResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import javax.annotation.Resource;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author cxm
- * @description
+ * @description 图灵机器人
  * @date 2019-11-07 11:00
  **/
 @Component
