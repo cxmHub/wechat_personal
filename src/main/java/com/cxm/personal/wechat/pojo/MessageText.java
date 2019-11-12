@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @author cxm
- * @description 文本类型属性
+ * @description 文本消息
  * @date 2019-10-22 15:07
  **/
 @Data

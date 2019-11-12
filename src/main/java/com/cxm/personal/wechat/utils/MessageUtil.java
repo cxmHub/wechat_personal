@@ -1,8 +1,6 @@
 package com.cxm.personal.wechat.utils;
 
-import com.cxm.personal.wechat.pojo.MessageText;
-import com.cxm.personal.wechat.pojo.Sentence;
-import com.cxm.personal.wechat.pojo.Weather;
+import com.cxm.personal.wechat.pojo.*;
 import com.cxm.personal.wechat.rpc.res.BaseResponse;
 import com.cxm.personal.wechat.rpc.res.QingYunKeResponse;
 import com.cxm.personal.wechat.rpc.res.Results;
@@ -11,6 +9,7 @@ import com.thoughtworks.xstream.XStream;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -35,6 +34,10 @@ public class MessageUtil {
     public static String MESSAGE_UNSUBSCRIBE = "unsubscribe";
     public static String MESSAGE_CLICK = "CLICK";
     public static String MESSAGE_VIEW = "VIEW";
+    public static String MESSAGE_NEWS = "NEWS";
+
+    // 修改成你服务器的地址 注意 最好是域名地址，不然访问的时候会警告
+    private static String host = "http://47.94.174.237/";
 
 
     /**
@@ -75,17 +78,28 @@ public class MessageUtil {
     }
 
     /**
-     * message转 xml
+     * text message转 xml
      *
      * @return
      */
     public static String messageToXml(MessageText messageText) {
-
         XStream xstream = new XStream();
         xstream.alias("xml", messageText.getClass());
         return xstream.toXML(messageText);
-
     }
+
+    /**
+     * news message转 xml
+     *
+     * @return
+     */
+    public static String newsMessageToXml(MessageNews messageNews) {
+        XStream xstream = new XStream();
+        xstream.alias("xml", messageNews.getClass());
+        xstream.alias("item", Item.class);
+        return xstream.toXML(messageNews);
+    }
+
 
     /**
      * 关注信息
@@ -99,9 +113,9 @@ public class MessageUtil {
         messageText.setToUserName(fromUserName);
         messageText.setFromUserName(toUserName);
         messageText.setCreateTime(new Date().getTime());
-        messageText.setContent("欢迎关注！\n" + "1、回复1，每日一句英语学习\n" +
-                "2、回复天气可以查询天气，例如：北京天气\n" +
-                "3、输入其他内容，可以在线与价值一亿的智能聊天机器人聊天");
+        messageText.setContent("欢迎关注！\n" + "1、回复0，可查看往期内容\n" +
+                "2、回复1，每日一句英语学习\n" +
+                "3、回复其他内容可以在线与价值一亿的智能聊天机器人聊天");
         messageText.setMsgType(MESSAGE_TEXT);
         return messageToXml(messageText);
     }
@@ -198,7 +212,7 @@ public class MessageUtil {
         String note = sentence.getNote();
         String translation = sentence.getTranslation();
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(content)
                 .append("\n")
                 .append(note)
@@ -234,4 +248,28 @@ public class MessageUtil {
         messageText.setMsgType(MESSAGE_TEXT);
         return messageToXml(messageText);
     }
+
+
+    // 历史文章列表 图文消息
+    public static String historyArticle(String fromUserName, String toUserName) {
+        MessageNews messageNews = new MessageNews();
+        List<Item> itemList = new ArrayList<>();
+        Item item = new Item();
+        item.setTitle("历史文章");
+        item.setPicUrl(host + "le.jpg");
+        item.setDescription("点我获取历史文章列表");
+//        item.setUrl("https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzAxNTI2ODk0NA==#wechat_redirect");
+        // 由于微信不允许连接到文章列表， 所以这里做一次重定向 机智如我
+        item.setUrl(host + "redirect");
+        itemList.add(item);
+
+        messageNews.setToUserName(fromUserName);
+        messageNews.setFromUserName(toUserName);
+        messageNews.setCreateTime(new Date().getTime());
+        messageNews.setMsgType(MESSAGE_NEWS);
+        messageNews.setArticles(itemList);
+        messageNews.setArticleCount(itemList.size());
+        return newsMessageToXml(messageNews).replace("&amp;", "&");
+    }
+
 }

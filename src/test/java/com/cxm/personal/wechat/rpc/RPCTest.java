@@ -33,4 +33,11 @@ public class RPCTest extends WechatApplicationTests {
         System.out.println(qingYunKeRPC.chatWithQingYunKeRoot("天气北京"));
     }
 
+
+    @Test
+    public void testReplace(){
+        String a = "https://mp.weixin.qq.com/mp/profile_ext?action=home&amp;__biz=MzAxNTI2ODk0NA==#wechat_redirect";
+        System.out.println(a.replace("&amp;", "&"));
+    }
+
 }
