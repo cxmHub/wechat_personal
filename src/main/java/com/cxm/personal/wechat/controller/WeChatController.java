@@ -7,6 +7,8 @@ import com.cxm.personal.wechat.service.LogService;
 import com.cxm.personal.wechat.service.SentenceService;
 import com.cxm.personal.wechat.utils.CheckWeChatUtil;
 import com.cxm.personal.wechat.utils.MessageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,6 +32,9 @@ import java.util.Map;
  **/
 @Controller
 public class WeChatController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WeChatController.class);
+
 
     @Value("${history.article.url}")
     private String historyArticleUrl;
@@ -50,7 +56,7 @@ public class WeChatController {
 
     @RequestMapping(value = "/redirect", method = RequestMethod.GET)
     public String historyArticleRedirect() {
-        return "redirect:" +historyArticleUrl;
+        return "redirect:" + historyArticleUrl;
     }
 
 
@@ -82,8 +88,7 @@ public class WeChatController {
         String content = map.get("Content");
         String event = map.get("Event");
         String message = "说点什么吧!";
-
-
+        LOGGER.info("request:" + content + "\nuser:" + fromUserName);
         logService.insertLog(fromUserName, content);
 
         try {
@@ -110,15 +115,16 @@ public class WeChatController {
                 }
             }
         } catch (Exception e) {
+            LOGGER.info(e.getMessage());
             message = MessageUtil.errorResult(fromUserName, toUserName, "对不起，这个我真帮不了您！");
         }
 
         try {
             out = response.getWriter();
             out.write(message);
+            LOGGER.info("response:" + message);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
