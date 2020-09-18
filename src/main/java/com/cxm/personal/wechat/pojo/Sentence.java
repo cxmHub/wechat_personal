@@ -18,4 +18,6 @@ public class Sentence implements Serializable {
         private String translation;
         private String date;
 
+        private String fenxiangImg;
+
 }

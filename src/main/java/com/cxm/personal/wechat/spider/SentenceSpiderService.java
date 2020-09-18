@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.JsonPathSelector;
 
@@ -47,11 +46,13 @@ public class SentenceSpiderService implements PageProcessor {
         String content = new JsonPathSelector("$.content").select(substring);
         String note = new JsonPathSelector("$.note").select(substring);
         String translation = new JsonPathSelector("$.translation").select(substring);
+        String fenxiangImg = new JsonPathSelector("$.fenxiang_img").select(substring);
 
         Sentence sentence = new Sentence();
         sentence.setContent(content);
         sentence.setNote(note);
         sentence.setTranslation(translation);
+        sentence.setFenxiangImg(fenxiangImg);
         sentence.setDate(dateFormat.format(new Date()));
         sentenceMapper.insert(sentence);
 

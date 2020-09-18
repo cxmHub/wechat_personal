@@ -210,14 +210,15 @@ public class MessageUtil {
     private static String dealWithSentence(Sentence sentence) {
         String content = sentence.getContent();
         String note = sentence.getNote();
-        String translation = sentence.getTranslation();
+//        String translation = sentence.getTranslation();
+        String fenxiangImg = sentence.getFenxiangImg();
 
         StringBuilder sb = new StringBuilder();
         sb.append(content)
                 .append("\n")
                 .append(note)
                 .append("\n")
-                .append(translation);
+                .append(fenxiangImg);
         return sb.toString();
     }
 
