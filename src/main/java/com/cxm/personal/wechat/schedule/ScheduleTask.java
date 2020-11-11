@@ -1,11 +1,10 @@
 package com.cxm.personal.wechat.schedule;
 
 import com.cxm.personal.wechat.mapper.SentenceMapper;
-import com.cxm.personal.wechat.mapper.WeatherMapper;
 import com.cxm.personal.wechat.pojo.Sentence;
-import com.cxm.personal.wechat.pojo.Weather;
+import com.cxm.personal.wechat.rpc.ICiBaRPC;
+import com.cxm.personal.wechat.rpc.res.MeiRiYiJu;
 import com.cxm.personal.wechat.spider.SentenceSpiderService;
-import com.cxm.personal.wechat.spider.WeatherSpiderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -28,6 +27,9 @@ public class ScheduleTask {
     @Resource
     private SentenceMapper sentenceMapper;
 
+    @Resource
+    private ICiBaRPC iCiBaRPC;
+
     @Value("${wechat.spider.sentence}")
     private String urlSentence;
 
@@ -36,6 +38,25 @@ public class ScheduleTask {
 
    private SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd ");
 
+    @Scheduled(cron = "1 0 0 * * ?") // 每天凌晨0：0:1爬取
+
+    @Scheduled(cron = "1 0 0 * * ?") // 每天凌晨0：0:1爬取
+    public void apiICiBaTask(){
+        String time = format.format(new Date());
+        Sentence sentence = sentenceMapper.selectByDate(time);
+        if (sentence != null){
+            sentenceMapper.delete(sentence.getId());
+        }
+
+        MeiRiYiJu meiRiYiJu = iCiBaRPC.getMeiRiYiJu();
+        Sentence insertSentence = new Sentence();
+        insertSentence.setFenxiangImg(meiRiYiJu.getFenxiang_img());
+        insertSentence.setContent(meiRiYiJu.getContent());
+        insertSentence.setNote(meiRiYiJu.getNote());
+        insertSentence.setTranslation(meiRiYiJu.getTranslation());
+        insertSentence.setDate(meiRiYiJu.getDateline());
+        sentenceMapper.insert(insertSentence);
+    }
 
     /**
      * 定时爬取
