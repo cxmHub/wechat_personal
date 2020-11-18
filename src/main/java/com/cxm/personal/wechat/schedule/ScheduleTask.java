@@ -38,7 +38,6 @@ public class ScheduleTask {
 
    private SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd ");
 
-    @Scheduled(cron = "1 0 0 * * ?") // 每天凌晨0：0:1爬取
 
     @Scheduled(cron = "1 0 0 * * ?") // 每天凌晨0：0:1爬取
     public void apiICiBaTask(){
