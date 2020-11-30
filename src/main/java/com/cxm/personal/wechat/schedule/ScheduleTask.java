@@ -1,10 +1,13 @@
 package com.cxm.personal.wechat.schedule;
 
+import com.alibaba.fastjson.JSON;
 import com.cxm.personal.wechat.mapper.SentenceMapper;
 import com.cxm.personal.wechat.pojo.Sentence;
 import com.cxm.personal.wechat.rpc.ICiBaRPC;
 import com.cxm.personal.wechat.rpc.res.MeiRiYiJu;
 import com.cxm.personal.wechat.spider.SentenceSpiderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,6 +24,9 @@ import java.util.Date;
  **/
 @Component
 public class ScheduleTask {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleTask.class);
+
 
     @Resource
     private SentenceSpiderService sentenceSpiderService;
@@ -41,6 +47,7 @@ public class ScheduleTask {
 
     @Scheduled(cron = "1 0 0 * * ?") // 每天凌晨0：0:1爬取
     public void apiICiBaTask(){
+        LOGGER.info("定时任务：获取金山api");
         String time = format.format(new Date());
         Sentence sentence = sentenceMapper.selectByDate(time);
         if (sentence != null){
@@ -55,12 +62,13 @@ public class ScheduleTask {
         insertSentence.setTranslation(meiRiYiJu.getTranslation());
         insertSentence.setDate(meiRiYiJu.getDateline());
         sentenceMapper.insert(insertSentence);
+        LOGGER.info("请求成功：" + JSON.toJSONString(insertSentence));
     }
 
     /**
      * 定时爬取
      */
-    @Scheduled(cron = "1 0 0 * * ?") // 每天凌晨0：0:1爬取
+//    @Scheduled(cron = "1 0 0 * * ?") // 每天凌晨0：0:1爬取
 //    @Scheduled(fixedDelay = 100000)
     private void spiderTask() {
         String time = format.format(new Date());
