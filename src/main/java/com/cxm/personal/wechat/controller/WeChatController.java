@@ -2,11 +2,14 @@ package com.cxm.personal.wechat.controller;
 
 import com.cxm.personal.wechat.pojo.Sentence;
 import com.cxm.personal.wechat.rpc.QingYunKeRPC;
+import com.cxm.personal.wechat.rpc.RestTemplateConfig;
 import com.cxm.personal.wechat.rpc.res.QingYunKeResponse;
 import com.cxm.personal.wechat.service.LogService;
 import com.cxm.personal.wechat.service.SentenceService;
+import com.cxm.personal.wechat.service.impl.WeChatServiceImpl;
 import com.cxm.personal.wechat.utils.CheckWeChatUtil;
 import com.cxm.personal.wechat.utils.MessageUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,6 +47,10 @@ public class WeChatController {
     private QingYunKeRPC qingYunKeRPC;
     @Resource
     private LogService logService;
+    @Resource
+    private RestTemplateConfig restTemplateConfig;
+    @Resource
+    private WeChatServiceImpl weChatService;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -87,7 +93,7 @@ public class WeChatController {
         String msgType = map.get("MsgType");
         String content = map.get("Content");
         String event = map.get("Event");
-        String message = "说点什么吧!";
+        String message = MessageUtil.commonMessage(toUserName,fromUserName,"说点什么吧");
         LOGGER.info("request:" + content + "\nuser:" + fromUserName);
         logService.insertLog(fromUserName, content);
 
@@ -102,9 +108,21 @@ public class WeChatController {
             } else {
                 if (MessageUtil.MESSAGE_TEXT.equals(msgType)) {
                     if ("1".equals(content)) {
+                        // 发送图片消息
                         Sentence sentenceByDate = sentenceService.getSentenceByDate(dateFormat.format(new Date()));
-                        message = MessageUtil.daySentence(fromUserName, toUserName, sentenceByDate);
-                    } else if ("0".equals(content)
+//                        message = MessageUtil.daySentence(fromUserName, toUserName, sentenceByDate);
+                        String mediaId = sentenceByDate.getMediaId();
+                        if (StringUtils.isBlank(mediaId)) {
+                            message = MessageUtil.commonMessage(fromUserName,toUserName,"今天没有");
+                        } else message = MessageUtil.initImageMessage(toUserName, fromUserName, mediaId);
+
+                    }
+//                    else if ("2".equals(content)) {
+//                        Sentence sentenceByDate = sentenceService.getSentenceByDate(dateFormat.format(new Date()));
+//                        String fenxiangImg = sentenceByDate.getFenxiangImg();
+//                        weChatService.connectHttpsByPost(fenxiangImg);
+//                    }
+                    else if ("0".equals(content)
                             || "历史消息".equals(content)
                             || "历史文章".equals(content)) {
                         message = MessageUtil.historyArticle(fromUserName, toUserName);
@@ -112,6 +130,15 @@ public class WeChatController {
                         QingYunKeResponse qingYunKeResponse = qingYunKeRPC.chatWithQingYunKeRoot(content);
                         message = MessageUtil.QingYunKe(fromUserName, toUserName, qingYunKeResponse);
                     }
+                } else {
+                    // 发送图片消息
+                    Sentence sentenceByDate = sentenceService.getSentenceByDate(dateFormat.format(new Date()));
+//                        message = MessageUtil.daySentence(fromUserName, toUserName, sentenceByDate);
+                    String mediaId = sentenceByDate.getMediaId();
+                    if (StringUtils.isBlank(mediaId)) {
+                        message = "今天没有";
+                    } else message = MessageUtil.initImageMessage(toUserName, fromUserName, mediaId);
+
                 }
             }
         } catch (Exception e) {
@@ -127,4 +154,6 @@ public class WeChatController {
             e.printStackTrace();
         }
     }
+
+
 }

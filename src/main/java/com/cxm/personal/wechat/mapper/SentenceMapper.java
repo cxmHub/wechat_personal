@@ -12,10 +12,10 @@ import org.apache.ibatis.annotations.Select;
  **/
 public interface SentenceMapper {
 
-    @Select("select id,content,note,translation,date,fenxiang_img as fenxiangImg from sentence where date = #{date}")
+    @Select("select id,content,note,translation,date,fenxiang_img as fenxiangImg , media_id as mediaId from sentence where date = #{date}")
     Sentence selectByDate(String date);
 
-    @Insert("insert into sentence(content,note,translation,date,fenxiang_img) values(#{content},#{note},#{translation},#{date},#{fenxiangImg})")
+    @Insert("insert into sentence(content,note,translation,date,fenxiang_img, media_id) values(#{content},#{note},#{translation},#{date},#{fenxiangImg},#{mediaId})")
     Integer insert(Sentence sentence);
 
     @Delete("delete from sentence where id = #{id}")

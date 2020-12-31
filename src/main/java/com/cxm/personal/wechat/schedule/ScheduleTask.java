@@ -1,10 +1,12 @@
 package com.cxm.personal.wechat.schedule;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.cxm.personal.wechat.mapper.SentenceMapper;
 import com.cxm.personal.wechat.pojo.Sentence;
 import com.cxm.personal.wechat.rpc.ICiBaRPC;
 import com.cxm.personal.wechat.rpc.res.MeiRiYiJu;
+import com.cxm.personal.wechat.service.impl.WeChatServiceImpl;
 import com.cxm.personal.wechat.spider.SentenceSpiderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +37,10 @@ public class ScheduleTask {
 
     @Resource
     private ICiBaRPC iCiBaRPC;
+    @Resource
+    private WeChatServiceImpl weChatService;
+
+
 
     @Value("${wechat.spider.sentence}")
     private String urlSentence;
@@ -46,7 +52,7 @@ public class ScheduleTask {
 
 
     @Scheduled(cron = "1 0 0 * * ?") // 每天凌晨0：0:1爬取
-    public void apiICiBaTask(){
+    public void apiICiBaTask() throws Exception{
         LOGGER.info("定时任务：获取金山api");
         String time = format.format(new Date());
         Sentence sentence = sentenceMapper.selectByDate(time);
@@ -61,6 +67,15 @@ public class ScheduleTask {
         insertSentence.setNote(meiRiYiJu.getNote());
         insertSentence.setTranslation(meiRiYiJu.getTranslation());
         insertSentence.setDate(meiRiYiJu.getDateline());
+
+        // 入 微信图片素材库
+        String fenxiangImg = insertSentence.getFenxiangImg();
+        String s = weChatService.connectHttpsByPost(fenxiangImg);
+        LOGGER.info("入素材库：" + JSON.toJSONString(s));
+
+        JSONObject jsonObject = JSONObject.parseObject(s);
+        Object mediaIdObj = jsonObject.get("media_id");
+        insertSentence.setMediaId(mediaIdObj.toString());
         sentenceMapper.insert(insertSentence);
         LOGGER.info("请求成功：" + JSON.toJSONString(insertSentence));
     }

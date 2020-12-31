@@ -17,7 +17,7 @@ public class Sentence implements Serializable {
         private String note;
         private String translation;
         private String date;
-
         private String fenxiangImg;
+        private String mediaId;
 
 }

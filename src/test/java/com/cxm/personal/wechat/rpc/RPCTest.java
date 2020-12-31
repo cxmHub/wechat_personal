@@ -1,8 +1,12 @@
 package com.cxm.personal.wechat.rpc;
 
-import com.alibaba.fastjson.JSONObject;
 import com.cxm.personal.wechat.WechatApplicationTests;
+import com.cxm.personal.wechat.pojo.AccessToken;
 import com.cxm.personal.wechat.rpc.res.BaseResponse;
+import com.cxm.personal.wechat.schedule.ScheduleTask;
+import com.cxm.personal.wechat.service.CityService;
+import com.cxm.personal.wechat.service.impl.WeChatServiceImpl;
+import com.cxm.personal.wechat.utils.WeixinUtil;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -19,6 +23,13 @@ public class RPCTest extends WechatApplicationTests {
     @Resource
     QingYunKeRPC qingYunKeRPC;
 
+    @Resource
+    CityService cityService;
+    @Resource
+    WeChatServiceImpl weChatService;
+    @Resource
+    ScheduleTask scheduleTask;
+
 
     @Test
     public void test() {
@@ -29,15 +40,32 @@ public class RPCTest extends WechatApplicationTests {
 
 
     @Test
-    public void QingYunKeTest(){
+    public void QingYunKeTest() {
         System.out.println(qingYunKeRPC.chatWithQingYunKeRoot("天气北京"));
     }
 
 
     @Test
-    public void testReplace(){
-        String a = "https://mp.weixin.qq.com/mp/profile_ext?action=home&amp;__biz=MzAxNTI2ODk0NA==#wechat_redirect";
-        System.out.println(a.replace("&amp;", "&"));
+    public void testReplace() throws Exception {
+        AccessToken accessToken = WeixinUtil.getAccessToken();
+        System.out.println(accessToken.getToken());
+    }
+
+
+    @Test
+    public void test1() throws Exception {
+//        weChatService.getMediaId();
+
+    }
+
+    @Test
+    public void testApiICiBaTask() throws Exception {
+//        System.out.println(weChatService.getMediaId("hR-tq819joXUx8EFhr9R84j9hLRZXExBus1WQ9drf-4"));
+
+        scheduleTask.apiICiBaTask();
+
+//        weChatService.getMediaList();
+
     }
 
 }

@@ -26,6 +26,9 @@ public class CityServiceImpl implements CityService {
     @Resource
     private CitySpiderService citySpiderService;
 
+    @Value("${access_token_url}")
+    String access_token_url;
+
     @Override
     public void insertCity(String content) {
 

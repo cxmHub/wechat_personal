@@ -10,7 +10,7 @@ import java.util.Arrays;
  **/
 public class CheckWeChatUtil {
 
-    private static String token = "chenxinmaochenxinmaochenxinmao";
+    public static String token = "chenxinmaochenxinmaochenxinmao";
 
     public static boolean checkWeChat(String signature, String timestamp, String nonce) {
         // 排序

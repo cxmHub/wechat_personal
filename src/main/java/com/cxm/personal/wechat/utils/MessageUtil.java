@@ -1,5 +1,6 @@
 package com.cxm.personal.wechat.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.cxm.personal.wechat.pojo.*;
 import com.cxm.personal.wechat.rpc.res.BaseResponse;
 import com.cxm.personal.wechat.rpc.res.QingYunKeResponse;
@@ -175,6 +176,17 @@ public class MessageUtil {
         return messageToXml(messageText);
     }
 
+    public static String daySentenceImage(String fromUserName, String toUserName, Sentence sentence) {
+        MessageText messageText = new MessageText();
+        messageText.setToUserName(fromUserName);
+        messageText.setFromUserName(toUserName);
+        messageText.setCreateTime(new Date().getTime());
+        messageText.setContent(dealWithSentence(sentence));
+        messageText.setMsgType(MESSAGE_IMAGE);
+        return messageToXml(messageText);
+    }
+
+
     /**
      * 错误消息
      *
@@ -250,6 +262,17 @@ public class MessageUtil {
         return messageToXml(messageText);
     }
 
+    // 处理QingYunKe内容
+    public static String commonMessage(String fromUserName, String toUserName, String message) {
+        MessageText messageText = new MessageText();
+        messageText.setToUserName(fromUserName);
+        messageText.setFromUserName(toUserName);
+        messageText.setCreateTime(new Date().getTime());
+        messageText.setContent(message);
+        messageText.setMsgType(MESSAGE_TEXT);
+        return messageToXml(messageText);
+    }
+
 
     // 历史文章列表 图文消息
     public static String historyArticle(String fromUserName, String toUserName) {
@@ -272,5 +295,42 @@ public class MessageUtil {
         messageNews.setArticleCount(itemList.size());
         return newsMessageToXml(messageNews).replace("&amp;", "&");
     }
+
+
+
+    /**
+     * 图片消息转为xml
+     * @param imageMessage 图片消息
+     */
+    public static String imageMessageToXml(ImageMessage imageMessage){
+        XStream xstream = new XStream();
+        xstream.alias("xml", imageMessage.getClass());
+        return xstream.toXML(imageMessage);
+    }
+
+
+    /**
+     * 组装图片消息
+     * @param toUserName
+     * @param fromUserName
+     * @return
+     */
+    public static String initImageMessage(String toUserName,String fromUserName, String mediaId){
+        String message = null;
+        Image image = new Image();
+        image.setMediaId(mediaId);
+        ImageMessage imageMessage = new ImageMessage();
+        imageMessage.setFromUserName(toUserName);
+        imageMessage.setToUserName(fromUserName);
+        imageMessage.setMsgType(MESSAGE_IMAGE);
+        imageMessage.setCreateTime(new Date().getTime());
+        imageMessage.setImage(image);
+        message = imageMessageToXml(imageMessage);
+        System.out.println(JSON.toJSONString(message));
+        return message;
+    }
+
+
+
 
 }

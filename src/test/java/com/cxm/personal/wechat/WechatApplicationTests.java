@@ -19,7 +19,7 @@ public class WechatApplicationTests {
 
 
     @Test
-    public void contextLoads() {
+    public void contextLoads() throws Exception{
         scheduleTask.apiICiBaTask();
     }
 
