@@ -1,60 +1,44 @@
-/*
- Navicat Premium Data Transfer
 
- Source Server         : aliyun
- Source Server Type    : MySQL
- Source Server Version : 50728
- Source Host           : 47.94.174.237:3306
- Source Schema         : wechat_public_personal
+CREATE DATABASE `wechat_public_personal` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 
- Target Server Type    : MySQL
- Target Server Version : 50728
- File Encoding         : 65001
+CREATE TABLE `city` (
+  `id` bigint(127) NOT NULL AUTO_INCREMENT,
+  `city_code` varchar(127) DEFAULT NULL,
+  `city_name` varchar(127) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `city_code` (`city_code`,`city_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
- Date: 25/10/2019 15:36:23
-*/
 
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
+CREATE TABLE `log` (
+  `id` bigint(127) NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(31) DEFAULT NULL,
+  `message` varchar(127) DEFAULT NULL,
+  `time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------
--- Table structure for city
--- ----------------------------
-DROP TABLE IF EXISTS `city`;
-CREATE TABLE `city`  (
-  `id` bigint(255) NOT NULL AUTO_INCREMENT,
-  `city_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `city_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
--- ----------------------------
--- Table structure for sentence
--- ----------------------------
-DROP TABLE IF EXISTS `sentence`;
-CREATE TABLE `sentence`  (
-  `id` bigint(255) NOT NULL AUTO_INCREMENT,
-  `content` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `note` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `translation` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `date` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 130 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+CREATE TABLE `sentence` (
+  `id` bigint(127) NOT NULL AUTO_INCREMENT,
+  `content` varchar(127) DEFAULT NULL,
+  `note` varchar(127) DEFAULT NULL,
+  `translation` varchar(127) DEFAULT NULL,
+  `date` varchar(127) DEFAULT NULL,
+  `fenxiang_img` longtext,
+  `media_id` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------
--- Table structure for weather
--- ----------------------------
-DROP TABLE IF EXISTS `weather`;
-CREATE TABLE `weather`  (
+CREATE TABLE `weather` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `cityCode` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `date` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `dayWeather` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `nightWeather` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `dayTemp` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `nightTemp` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `windLevel` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 80 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
-
-SET FOREIGN_KEY_CHECKS = 1;
+  `cityCode` varchar(127) DEFAULT NULL,
+  `date` varchar(127) DEFAULT NULL,
+  `dayWeather` varchar(127) DEFAULT NULL,
+  `nightWeather` varchar(127) DEFAULT NULL,
+  `dayTemp` varchar(127) DEFAULT NULL,
+  `nightTemp` varchar(127) DEFAULT NULL,
+  `windLevel` varchar(127) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `cityCode` (`cityCode`,`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

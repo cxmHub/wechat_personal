@@ -38,7 +38,7 @@ public class MessageUtil {
     public static String MESSAGE_NEWS = "NEWS";
 
     // 修改成你服务器的地址 注意 最好是域名地址，不然访问的时候会警告
-    private static String host = "http://47.94.174.237/";
+    private static String host = "http://110.41.133.228/";
 
 
     /**
